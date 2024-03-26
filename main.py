@@ -1,6 +1,8 @@
 import pygame
 import os
 import random
+import time
+
 
 #COLORS
 GREY = (128, 128, 128)
@@ -129,6 +131,15 @@ def create_blocks():
     
     BLOCKS.append(red_block)
 
+def let_block_fall(block): 
+    
+
+    for i in range(len(block)):
+        block[i].y += GRID_HEIGHT
+
+
+
+              
 def draw_window(): 
     WIN.fill(GREY)
     pygame.draw.rect(WIN, BLACK, PLAY_AREA)
@@ -137,9 +148,9 @@ def draw_window():
         for column in row: 
             pygame.draw.rect(WIN, BLACK, column)
 
-    create_blocks()
     for square in BLOCKS[6]: 
         pygame.draw.rect(WIN, RED, square)
+
     
     start_x = GRID_WIDTH
     for i in range(10): 
@@ -158,14 +169,22 @@ def main():
     
     clock = pygame.time.Clock()
     run = True
-    
+    create_blocks()
+    fall_counter = 1
+
     while run: 
         clock.tick(FPS)
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 run = False
-
+        
+        time_elapsed = pygame.time.get_ticks()
+        if time_elapsed >= fall_counter * 300: 
+            fall_counter += 1
+            let_block_fall(BLOCKS[6])
+        
         populate_grid_rectangles()
+        
         draw_window()
     
     pygame.quit()
