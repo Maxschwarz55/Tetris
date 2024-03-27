@@ -2,6 +2,8 @@ import pygame
 import os
 import random
 import time
+import block
+import new_rect
 
 
 #COLORS
@@ -35,6 +37,7 @@ GRID_RECTANGLES = []
 #BLOCKS
 
 BLOCKS = []
+BLOCK_COLORS = [TEAL, BLUE, ORANGE, YELLOW, GREEN, PURPLE, RED]
 
 #MISC
 FPS = 60
@@ -46,7 +49,7 @@ def populate_grid_rectangles():
         ROW = []
         x_count = 0
         for j in range(10):
-            rect = pygame.Rect(x_count, y_count, GRID_WIDTH, GRID_HEIGHT)
+            rect = new_rect.New_Rect(x_count, y_count, GRID_WIDTH, GRID_HEIGHT, BLACK)
             ROW.append(rect)
             x_count += GRID_WIDTH  
         GRID_RECTANGLES.append(ROW)
@@ -54,102 +57,121 @@ def populate_grid_rectangles():
 
 def create_blocks(): 
     
-    #TEAL
-    teal_block = []
-    top_pos = 0
-    for _ in range(4): 
-        teal_square = pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos, GRID_WIDTH, GRID_HEIGHT)
-        teal_block.append(teal_square)
-        top_pos += GRID_HEIGHT
-    
+    teal_block = block.Block()
+    teal_block.create_teal()
+    blue_block = block.Block()
+    blue_block.create_blue()
+    orange_block = block.Block()
+    orange_block.create_orange()
+    yellow_block = block.Block()
+    yellow_block.create_yellow()
+    green_block = block.Block()
+    green_block.create_green()
+    purple_block = block.Block()
+    purple_block.create_purple()
+    red_block = block.Block()
+    red_block.create_red()
+
     BLOCKS.append(teal_block)
-
-    #BLUE
-
-    blue_block = []
-
-    top_pos = 0
-    blue_block.append(pygame.Rect(WIDTH // 4 - (GRID_WIDTH * 2) , top_pos, GRID_WIDTH, GRID_HEIGHT))
-    blue_block.append(pygame.Rect(WIDTH // 4 - (GRID_WIDTH * 2), top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    blue_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH , top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    blue_block.append(pygame.Rect(WIDTH // 4, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-
     BLOCKS.append(blue_block)
-
-    #ORANGE
-
-    orange_block = []
-    
-    orange_block.append(pygame.Rect(WIDTH // 4, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    orange_block.append(pygame.Rect(WIDTH // 4, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    orange_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    orange_block.append(pygame.Rect(WIDTH // 4 - (GRID_WIDTH * 2), top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-
     BLOCKS.append(orange_block)
-
-    #YELLOW 
-
-    yellow_block = []
-
-    yellow_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    yellow_block.append(pygame.Rect(WIDTH // 4, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    yellow_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    yellow_block.append(pygame.Rect(WIDTH // 4, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    
     BLOCKS.append(yellow_block)
-
-    #GREEN 
-
-    green_block = []
-
-    green_block.append(pygame.Rect(WIDTH // 4 - (GRID_WIDTH * 2), top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    green_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    green_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    green_block.append(pygame.Rect(WIDTH // 4, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    
     BLOCKS.append(green_block)
-
-    #PURPLE 
-
-    purple_block = []
-
-    purple_block.append(pygame.Rect(WIDTH // 4 - (GRID_WIDTH * 2), top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    purple_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    purple_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    purple_block.append(pygame.Rect(WIDTH // 4, top_pos + GRID_WIDTH, GRID_WIDTH, GRID_HEIGHT))
-    
     BLOCKS.append(purple_block)
-
-    #RED
-
-    red_block = []
-
-    red_block.append(pygame.Rect(WIDTH // 4, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    red_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos + GRID_HEIGHT, GRID_WIDTH, GRID_HEIGHT))
-    red_block.append(pygame.Rect(WIDTH // 4 - GRID_WIDTH, top_pos, GRID_WIDTH, GRID_HEIGHT))
-    red_block.append(pygame.Rect(WIDTH // 4 - (GRID_WIDTH * 2), top_pos, GRID_WIDTH, GRID_HEIGHT))
-    
     BLOCKS.append(red_block)
 
-def let_block_fall(block): 
+def create_random_block(block_id): 
+    
+    tetronimo = block.Block()
+
+    match block_id: 
+        case 0:
+            tetronimo.create_teal()
+        case 1:
+            tetronimo.create_blue()
+        case 2:
+            tetronimo.create_orange()
+        case 3:
+            tetronimo.create_yellow()
+        case 4: 
+            tetronimo.create_green()
+        case 5: 
+            tetronimo.create_purple()
+        case 6: 
+            tetronimo.create_red()
+
+    return tetronimo
     
 
-    for i in range(len(block)):
-        block[i].y += GRID_HEIGHT
+def let_block_fall(block_type, block_color, is_dropped):
+    
+    for row in range(20):
+        for column in range(10): 
+            for square in block_type:
+                if square.colliderect(GRID_RECTANGLES[0][column]):
+                    is_dropped = True
+                if grid_vals[row][column] == 1 and square.colliderect(GRID_RECTANGLES[row + 1][column]):
+                    is_dropped = True
+                    GRID_RECTANGLES[row + 1][column].color = block_color
+
+                if is_dropped and square.colliderect(GRID_RECTANGLES[row][column]):
+                    grid_vals[row][column] = 1
+                    GRID_RECTANGLES[row][column] = square
+                    GRID_RECTANGLES[row][column].color = block_color
+
+    if is_dropped == False:
+        for i in range(len(block_type)):
+            block_type[i].y += GRID_HEIGHT
+
+    return is_dropped
+    
+
+def move_left(block_type):
+
+    for square in block_type: 
+        if (square.x - GRID_WIDTH < 0):
+            return
+    
+    for row in range(20):
+        for column in range(10):
+            for square in block_type:
+                if grid_vals[row][column] == 1 and column < 9 and square.colliderect(GRID_RECTANGLES[row][column + 1]): 
+                    return
+
+        
+    for square in block_type:
+        square.x -= GRID_WIDTH
+
+def move_right(block_type): 
+    
+    for square in block_type: 
+        if (square.x + (GRID_WIDTH * 2)> WIDTH // 2):
+            return
+        
+    for row in range(20):
+        for column in range(10):
+            for square in block_type:
+                if grid_vals[row][column] == 1 and column > 0 and square.colliderect(GRID_RECTANGLES[row][column - 1]): 
+                    return
+    
+    for square in block_type: 
+        square.x += GRID_WIDTH
 
 
-
-              
-def draw_window(): 
+        
+def draw_window(block_type, block_color): 
     WIN.fill(GREY)
     pygame.draw.rect(WIN, BLACK, PLAY_AREA)
 
-    for row in GRID_RECTANGLES: 
-        for column in row: 
-            pygame.draw.rect(WIN, BLACK, column)
+    for row in range(20): 
+        for column in range(10): 
+           color = GRID_RECTANGLES[row][column].color
+           pygame.draw.rect(WIN, color, GRID_RECTANGLES[row][column]) 
 
-    for square in BLOCKS[6]: 
-        pygame.draw.rect(WIN, RED, square)
+            
+
+    for square in block_type: 
+        pygame.draw.rect(WIN, block_color, square)
 
     
     start_x = GRID_WIDTH
@@ -165,27 +187,52 @@ def draw_window():
     pygame.display.update()
 
 
+
+
 def main(): 
+
+    create_blocks()
     
     clock = pygame.time.Clock()
     run = True
-    create_blocks()
+    
     fall_counter = 1
+
+    block_id = random.randint(0, 6)
+    block_dropped = False
+    drop_new_block = True
 
     while run: 
         clock.tick(FPS)
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 run = False
-        
+            if event.type == pygame.KEYDOWN: 
+                if event.key == pygame.K_LEFT and block_dropped == False: 
+                    move_left(block_type)
+                if event.key == pygame.K_RIGHT and block_dropped == False:
+                    move_right(block_type)
+
         time_elapsed = pygame.time.get_ticks()
-        if time_elapsed >= fall_counter * 300: 
-            fall_counter += 1
-            let_block_fall(BLOCKS[6])
-        
+
         populate_grid_rectangles()
         
-        draw_window()
+        if drop_new_block:
+            tetronimo = create_random_block(block_id)
+            block_type = tetronimo.blocks
+            block_color = tetronimo.color
+            drop_new_block = False
+
+        if time_elapsed >= fall_counter * 400:
+            fall_counter += 1
+            block_dropped = let_block_fall(block_type, block_color, block_dropped)
+        if block_dropped == True: 
+            block_id = random.randint(0,6)
+            block_dropped = False
+            drop_new_block = True
+
+        draw_window(block_type, block_color)
+            
     
     pygame.quit()
 
